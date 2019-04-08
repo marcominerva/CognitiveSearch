@@ -36,6 +36,26 @@ namespace Search42.ViewModels
             set => Set(ref searchResultItems, value);
         }
 
+        private IEnumerable<Facet> facets;
+        public IEnumerable<Facet> Facets
+        {
+            get => facets;
+            set => Set(ref facets, value);
+        }
+
+        private Facet selectedFacet;
+        public Facet SelectedFacet
+        {
+            get => selectedFacet;
+            set
+            {
+                if (value != null && Set(ref selectedFacet, value))
+                {
+                    var task = SearchAsync();
+                }
+            }
+        }
+
         private bool isBusy;
         public bool IsBusy
         {
@@ -56,9 +76,18 @@ namespace Search42.ViewModels
         {
             IsBusy = true;
 
-            SearchResult = await searchService.SearchAsync(searchText, new List<string> { "imageTags" });
+            SearchResult = await searchService.SearchAsync(searchText,
+                filters: selectedFacet != null ? $"imageTags/any(t: t eq '{selectedFacet.Key}')" : null,
+                facets: new List<string> { "imageTags" });
+
+            if (selectedFacet == null)
+            {
+                Facets = searchResult.Facets.FirstOrDefault().Value.Select(f => new Facet { Key = f.Value.ToString(), Count = f.Count.GetValueOrDefault() });
+            }
+
             SearchResultItems = searchResult.Results.Select(r => r.Document).ToList();
 
+            selectedFacet = null;
             IsBusy = false;
         }
     }

@@ -36,7 +36,6 @@
             </Grid.ColumnDefinitions>
 
             <AutoSuggestBox
-                x:Name="SearchBox"
                 Grid.Row="0"
                 Grid.Column="1"
                 Margin="20,5,5,5"
@@ -51,10 +50,32 @@
             </AutoSuggestBox>
 
             <ListView
+                x:Name="FacetsListView"
+                Grid.Row="1"
+                Grid.Column="0"
+                IsItemClickEnabled="True"
+                ItemsSource="{x:Bind ViewModel.Facets, Mode=OneWay}"
+                SelectedItem="{x:Bind ViewModel.SelectedFacet, Mode=TwoWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Facet">
+                        <TextBlock VerticalAlignment="Top" FontSize="22">
+                            <Run Text="{x:Bind Key}" />
+                            <Run
+                                FontSize="18"
+                                Foreground="DarkGray"
+                                Text="{x:Bind Count}" />
+                        </TextBlock>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="5"
-                ItemsSource="{x:Bind ViewModel.SearchResultItems, Mode=OneWay}">
+                VerticalAlignment="Top"
+                ItemsSource="{x:Bind ViewModel.SearchResultItems, Mode=OneWay}"
+                SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:CognitiveSearchResult">
                         <Grid>
@@ -75,7 +96,7 @@
                                 Grid.Column="1"
                                 Margin="10,0,0,0"
                                 VerticalAlignment="Top"
-                                FontSize="24"
+                                FontSize="22"
                                 Text="{x:Bind Description}" />
                         </Grid>
                     </DataTemplate>
@@ -85,10 +106,8 @@
             <TextBlock
                 Grid.Row="2"
                 Grid.Column="1"
-                Margin="20,10,0,10">
-                <Run Text="{x:Bind ViewModel.SearchResult.Count, Mode=OneWay}" />
-                <Run Text="Result(s) found" />
-            </TextBlock>
+                Margin="20,10,0,10"
+                Text="{x:Bind ViewModel.SearchResult.Count, Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0} Results found', Mode=OneWay}" />
 
             <!--  Column Grid Splitter  -->
             <controls:GridSplitter
@@ -111,8 +130,8 @@
             Grid.RowSpan="2"
             Grid.Column="1"
             Grid.ColumnSpan="2"
-            Width="200"
-            Height="200"
+            Width="100"
+            Height="100"
             IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
     </Grid>
 </Page>

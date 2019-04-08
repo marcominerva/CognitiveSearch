@@ -18,10 +18,11 @@ namespace Search42.Core.Services
             index = new SearchIndexClient(serviceName, indexName, new SearchCredentials(apiKey));
         }
 
-        public async Task<DocumentSearchResult<CognitiveSearchResult>> SearchAsync(string term, IList<string> facets = null)
+        public async Task<DocumentSearchResult<CognitiveSearchResult>> SearchAsync(string term, string filters = null, IList<string> facets = null)
         {
             var searchParameters = new SearchParameters()
             {
+                Filter = filters,
                 IncludeTotalResultCount = true,
                 Facets = facets
             };
