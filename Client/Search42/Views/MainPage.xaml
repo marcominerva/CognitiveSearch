@@ -39,12 +39,22 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 Margin="20,5,5,5"
+                ItemsSource="{x:Bind ViewModel.Suggestions, Mode=OneWay}"
                 PlaceholderText="Search for something..."
                 QueryIcon="Find"
                 Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <Interactivity:Interaction.Behaviors>
                     <Interactions:EventTriggerBehavior EventName="QuerySubmitted">
-                        <Interactions:InvokeCommandAction Command="{x:Bind ViewModel.SearchCommand}" />
+                        <Interactions:InvokeCommandAction
+                            Command="{x:Bind ViewModel.SearchCommand}"
+                            InputConverter="{StaticResource EventArgsConverter}"
+                            InputConverterParameter="QueryText" />
+                    </Interactions:EventTriggerBehavior>
+                    <Interactions:EventTriggerBehavior EventName="TextChanged">
+                        <Interactions:InvokeCommandAction
+                            Command="{x:Bind ViewModel.TextChangedCommand}"
+                            InputConverter="{StaticResource EventArgsConverter}"
+                            InputConverterParameter="Reason" />
                     </Interactions:EventTriggerBehavior>
                 </Interactivity:Interaction.Behaviors>
             </AutoSuggestBox>
@@ -97,7 +107,8 @@
                                 Margin="10,0,0,0"
                                 VerticalAlignment="Top"
                                 FontSize="22"
-                                Text="{x:Bind Description}" />
+                                Text="{x:Bind Description}"
+                                TextWrapping="Wrap" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

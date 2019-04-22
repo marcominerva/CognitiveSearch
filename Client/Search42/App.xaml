@@ -1,14 +1,16 @@
 ﻿<Application
     x:Class="Search42.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:localConverters="using:Search42.Converters">
 
     <Application.Resources>
         <ResourceDictionary>
             <vm:ViewModelLocator xmlns:vm="using:Search42.ViewModels" x:Key="Locator" />
 
             <converters:StringFormatConverter x:Key="StringFormatConverter" />
+            <localConverters:EventArgsConverter x:Key="EventArgsConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/_Colors.xaml" />

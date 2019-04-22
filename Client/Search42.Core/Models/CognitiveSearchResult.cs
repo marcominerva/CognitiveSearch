@@ -3,8 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Search42.Core.Models
 {
@@ -44,12 +42,5 @@ namespace Search42.Core.Models
         }
 
         public string Description => ImageCaptions.FirstOrDefault()?.Text;
-    }
-
-    public class ImageCaption
-    {
-        public string Text { get; set; }
-
-        public double Confidence { get; set; }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
+using Newtonsoft.Json;
 using Search42.Core.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Search42.Core.Services
@@ -29,6 +28,32 @@ namespace Search42.Core.Services
 
             var results = await index.Documents.SearchAsync<CognitiveSearchResult>(term, searchParameters);
             return results;
+        }
+
+        public async Task<IEnumerable<CognitiveSearchSuggestion>> GetSuggestionsAsync(string searchText, string suggesterName)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                return null;
+            }
+
+            try
+            {
+                var sp = new SuggestParameters()
+                {
+                    UseFuzzyMatching = true,
+                    Top = 5
+                };
+
+                var response = await index.Documents.SuggestAsync(searchText, suggesterName, sp);
+
+                var suggestions = response.Results.Select(x => JsonConvert.DeserializeObject<CognitiveSearchSuggestion>(x.Text)).ToList();
+                return suggestions;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
