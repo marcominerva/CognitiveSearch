@@ -23,9 +23,7 @@ namespace TranslateFunction
         private const string key = "";
 
         [FunctionName("Translate")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req,
-            ILogger log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req, ILogger log)
         {
             var requestBody = new StreamReader(req.Body).ReadToEnd();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -35,6 +33,7 @@ namespace TranslateFunction
             {
                 return new BadRequestObjectResult(" Could not find values array");
             }
+
             if (data?.values.HasValues == false || data?.values.First.HasValues == false)
             {
                 // It could not find a record, then return empty values array.
