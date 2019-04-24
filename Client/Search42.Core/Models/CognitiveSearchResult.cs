@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Search42.Core.Models
 {
@@ -14,8 +15,26 @@ namespace Search42.Core.Models
         [JsonProperty("imageTags")]
         public IEnumerable<string> Tags { get; set; }
 
-        [JsonProperty("blob_uri")]
-        public string Uri { get; set; }
+        private string uri;
+        public string Uri
+        {
+            get
+            {
+                if (uri == null)
+                {
+                    var base64Uri = Key.Trim().Replace(" ", "+");
+                    if (base64Uri.Length % 4 > 0)
+                    {
+                        base64Uri = base64Uri.PadRight(base64Uri.Length + 4 - base64Uri.Length % 4, '=');
+                    }
+
+                    var byteArray = Convert.FromBase64String(base64Uri);
+                    uri = Encoding.UTF8.GetString(byteArray);
+                }
+
+                return uri;
+            }
+        }
 
         [JsonProperty("imageCaption")]
         public IEnumerable<string> RawImageCaptions { get; set; }
