@@ -22,7 +22,7 @@ namespace Search42.Core.Models
             {
                 if (uri == null)
                 {
-                    var base64Uri = Key.Trim().Replace(" ", "+");
+                    var base64Uri = Key.Substring(0, Key.Length - 1).Replace(" ", "+");
                     if (base64Uri.Length % 4 > 0)
                     {
                         base64Uri = base64Uri.PadRight(base64Uri.Length + 4 - base64Uri.Length % 4, '=');
