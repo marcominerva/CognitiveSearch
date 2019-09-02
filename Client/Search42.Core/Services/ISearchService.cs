@@ -7,7 +7,7 @@ namespace Search42.Core.Services
 {
     public interface ISearchService
     {
-        Task<DocumentSearchResult<CognitiveSearchResult>> SearchAsync(string term, string filters = null, IList<string> facets = null);
+        Task<DocumentSearchResult<CognitiveSearchResult>> SearchAsync(string term, string filters = null, IList<string> orderBy = null, IList<string> facets = null);
 
         Task<IEnumerable<CognitiveSearchSuggestion>> GetSuggestionsAsync(string searchText, string suggesterName);
     }

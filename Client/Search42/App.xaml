@@ -11,6 +11,7 @@
 
             <converters:StringFormatConverter x:Key="StringFormatConverter" />
             <localConverters:EventArgsConverter x:Key="EventArgsConverter" />
+            <localConverters:AutoSuggestionBoxTextChangeReasonToBooleanConverter x:Key="AutoSuggestionBoxTextChangeReasonToBooleanConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/_Colors.xaml" />

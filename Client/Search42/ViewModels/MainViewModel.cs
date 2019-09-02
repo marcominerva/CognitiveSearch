@@ -1,13 +1,12 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using Microsoft.Azure.Search.Models;
+using Search42.Common;
 using Search42.Core.Models;
 using Search42.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
 
 namespace Search42.ViewModels
 {
@@ -19,7 +18,7 @@ namespace Search42.ViewModels
         public string SearchText
         {
             get => searchText;
-            set => Set(ref searchText, value);
+            set => Set(ref searchText, value, broadcast: true);
         }
 
         private DocumentSearchResult<CognitiveSearchResult> searchResult;
@@ -59,7 +58,7 @@ namespace Search42.ViewModels
             {
                 if (value != null && Set(ref selectedFacet, value))
                 {
-                    var task = SearchAsync(searchText);
+                    SearchCommand.Execute(searchText);
                 }
             }
         }
@@ -68,19 +67,24 @@ namespace Search42.ViewModels
         public bool IsBusy
         {
             get => isBusy;
-            set => Set(ref isBusy, value);
+            set => Set(ref isBusy, value, broadcast: true);
         }
 
-        public RelayCommand<string> SearchCommand { get; }
+        public AutoRelayCommand<string> SearchCommand { get; }
 
-        public RelayCommand<AutoSuggestionBoxTextChangeReason> TextChangedCommand { get; }
+        public AutoRelayCommand<bool> TextChangedCommand { get; }
 
         public MainViewModel(ISearchService searchService)
         {
             this.searchService = searchService;
 
-            SearchCommand = new RelayCommand<string>(async (queryText) => await SearchAsync(queryText));
-            TextChangedCommand = new RelayCommand<AutoSuggestionBoxTextChangeReason>(async (reason) => await SuggestAsync(reason));
+            SearchCommand = new AutoRelayCommand<string>(async (queryText) => await SearchAsync(queryText),
+                (queryText) => !IsBusy && !string.IsNullOrWhiteSpace(queryText))
+                .DependsOn(nameof(IsBusy)).DependsOn(nameof(SearchText));
+
+            TextChangedCommand = new AutoRelayCommand<bool>(async (isUserInput) => await SuggestAsync(),
+                (isUserInput) => isUserInput && searchText?.Length >= 2)
+                .DependsOn(nameof(SearchText));
         }
 
         private async Task SearchAsync(string queryText)
@@ -105,15 +109,12 @@ namespace Search42.ViewModels
             IsBusy = false;
         }
 
-        private async Task SuggestAsync(AutoSuggestionBoxTextChangeReason reason)
+        private async Task SuggestAsync()
         {
-            if (reason == AutoSuggestionBoxTextChangeReason.UserInput)
-            {
-                var suggestionReults = await searchService.GetSuggestionsAsync(searchText, "entities");
-                Suggestions = suggestionReults?.SelectMany(s => s.Tags)
-                    .Where(s => s.StartsWith(searchText, StringComparison.InvariantCultureIgnoreCase))
-                    .Distinct().OrderBy(s => s);
-            }
+            var suggestionReults = await searchService.GetSuggestionsAsync(searchText, "entities");
+            Suggestions = suggestionReults?.SelectMany(s => s.Tags)
+                .Where(s => s.StartsWith(searchText, StringComparison.InvariantCultureIgnoreCase))
+                .Distinct().OrderBy(s => s);
         }
     }
 }

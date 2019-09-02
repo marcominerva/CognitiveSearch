@@ -51,19 +51,14 @@
                             InputConverterParameter="QueryText" />
                     </Interactions:EventTriggerBehavior>
                     <Interactions:EventTriggerBehavior EventName="TextChanged">
-                        <Interactions:InvokeCommandAction
-                            Command="{x:Bind ViewModel.TextChangedCommand}"
-                            InputConverter="{StaticResource EventArgsConverter}"
-                            InputConverterParameter="Reason" />
+                        <Interactions:InvokeCommandAction Command="{x:Bind ViewModel.TextChangedCommand}" InputConverter="{StaticResource AutoSuggestionBoxTextChangeReasonToBooleanConverter}" />
                     </Interactions:EventTriggerBehavior>
                 </Interactivity:Interaction.Behaviors>
             </AutoSuggestBox>
 
             <ListView
-                x:Name="FacetsListView"
                 Grid.Row="1"
                 Grid.Column="0"
-                IsItemClickEnabled="True"
                 ItemsSource="{x:Bind ViewModel.Facets, Mode=OneWay}"
                 SelectedItem="{x:Bind ViewModel.SelectedFacet, Mode=TwoWay}">
                 <ListView.ItemTemplate>

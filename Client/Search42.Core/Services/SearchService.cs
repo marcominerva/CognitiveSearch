@@ -17,16 +17,17 @@ namespace Search42.Core.Services
             index = new SearchIndexClient(serviceName, indexName, new SearchCredentials(apiKey));
         }
 
-        public async Task<DocumentSearchResult<CognitiveSearchResult>> SearchAsync(string term, string filters = null, IList<string> facets = null)
+        public async Task<DocumentSearchResult<CognitiveSearchResult>> SearchAsync(string term, string filters = null, IList<string> orderBy = null, IList<string> facets = null)
         {
             var searchParameters = new SearchParameters()
             {
+                OrderBy = orderBy,
                 Filter = filters,
                 IncludeTotalResultCount = true,
                 Facets = facets
             };
 
-            var results = await index.Documents.SearchAsync<CognitiveSearchResult>(term, searchParameters);
+            var results = await index.Documents.SearchAsync<CognitiveSearchResult>($"\"{term}\"", searchParameters);
             return results;
         }
 
@@ -37,23 +38,16 @@ namespace Search42.Core.Services
                 return null;
             }
 
-            try
+            var sp = new SuggestParameters()
             {
-                var sp = new SuggestParameters()
-                {
-                    UseFuzzyMatching = true,
-                    Top = 5
-                };
+                UseFuzzyMatching = true,
+                Top = 5
+            };
 
-                var response = await index.Documents.SuggestAsync(searchText, suggesterName, sp);
+            var response = await index.Documents.SuggestAsync(searchText, suggesterName, sp);
 
-                var suggestions = response.Results.Select(x => JsonConvert.DeserializeObject<CognitiveSearchSuggestion>(x.Text)).ToList();
-                return suggestions;
-            }
-            catch
-            {
-                return null;
-            }
+            var suggestions = response.Results.Select(x => JsonConvert.DeserializeObject<CognitiveSearchSuggestion>(x.Text));
+            return suggestions;
         }
     }
 }
