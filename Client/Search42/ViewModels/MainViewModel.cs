@@ -93,8 +93,8 @@ namespace Search42.ViewModels
             SearchText = queryText;
 
             SearchResult = await searchService.SearchAsync(searchText,
-                filters: selectedFacet != null ? $"imageTags/any(t: t eq '{selectedFacet.Key}')" : null,
-                facets: new List<string> { "imageTags" });
+                filters: selectedFacet != null ? $"ImageTags/any(t: t eq '{selectedFacet.Key}')" : null,
+                facets: new List<string> { "ImageTags" });
 
             if (selectedFacet == null)
             {
