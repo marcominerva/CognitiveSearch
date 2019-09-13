@@ -33,11 +33,6 @@ namespace Search42.Core.Services
 
         public async Task<IEnumerable<CognitiveSearchSuggestion>> GetSuggestionsAsync(string searchText, string suggesterName)
         {
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                return null;
-            }
-
             var sp = new SuggestParameters()
             {
                 UseFuzzyMatching = true,
