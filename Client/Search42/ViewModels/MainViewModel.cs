@@ -79,8 +79,8 @@ namespace Search42.ViewModels
             this.searchService = searchService;
 
             SearchCommand = new AutoRelayCommand<string>(async (queryText) => await SearchAsync(queryText),
-                (queryText) => !IsBusy && !string.IsNullOrWhiteSpace(queryText))
-                .DependsOn(nameof(IsBusy)).DependsOn(nameof(SearchText));
+                (queryText) => !IsBusy)
+                .DependsOn(nameof(IsBusy));
 
             TextChangedCommand = new AutoRelayCommand<bool>(async (isUserInput) => await SuggestAsync(),
                 (isUserInput) => isUserInput && searchText?.Length >= 2)
@@ -93,8 +93,8 @@ namespace Search42.ViewModels
             SearchText = queryText;
 
             SearchResult = await searchService.SearchAsync(searchText,
-                filters: selectedFacet != null ? $"ImageTags/any(t: t eq '{selectedFacet.Key}')" : null,
-                facets: new List<string> { "ImageTags" });
+                filters: selectedFacet != null ? $"imageTags/any(t: t eq '{selectedFacet.Key}')" : null,
+                facets: new List<string> { "imageTags" });
 
             if (selectedFacet == null)
             {

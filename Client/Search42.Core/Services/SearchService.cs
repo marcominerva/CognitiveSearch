@@ -27,7 +27,7 @@ namespace Search42.Core.Services
                 Facets = facets
             };
 
-            var results = await index.Documents.SearchAsync<CognitiveSearchResult>($"\"{term}\"", searchParameters);
+            var results = await index.Documents.SearchAsync<CognitiveSearchResult>(string.IsNullOrWhiteSpace(term) ? "*" : $"\"{term}\"", searchParameters);
             return results;
         }
 
@@ -41,7 +41,9 @@ namespace Search42.Core.Services
 
             var response = await index.Documents.SuggestAsync(searchText, suggesterName, sp);
 
-            var suggestions = response.Results.Select(x => JsonConvert.DeserializeObject<CognitiveSearchSuggestion>(x.Text));
+            var suggestions = response.Results.Where(r => r.Text.StartsWith("{"))
+                .Select(x => JsonConvert.DeserializeObject<CognitiveSearchSuggestion>(x.Text));
+
             return suggestions;
         }
     }
